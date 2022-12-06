@@ -7,12 +7,14 @@ import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,8 +30,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import org.intellij.lang.annotations.RegExp;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
     int RandomNumber;
     EditText uni;
     String urldownload;
+     String type;
+     String[] et;
+     String filename;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,30 +101,41 @@ public class MainActivity extends AppCompatActivity {
     private void DownloadFile() {
         String numuni=uni.getText().toString();
         int u=Integer.parseInt(numuni);
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot ds :snapshot.getChildren()){
-                    int num=ds.child("number").getValue(Integer.class);
+                for(DataSnapshot ds :snapshot.getChildren()) {
+                    int num = ds.child("number").getValue(Integer.class);
                     if (num == u) {
-                        urldownload=ds.child("url").getValue(String.class);
-                        String fname=ds.getKey();
-//                        String ff[]=urldownload.split(Pattern.quote("?"));
-//                        String filenpm=("https://firebasestorage.googleapis.com/v0/b/image-share-4446c.appspot.com/o/images");
-//                        String ex =filenpm[0];
-//                        Toast.makeText(MainActivity.this, ff[0], Toast.LENGTH_SHORT).show();
+                        urldownload = ds.child("url").getValue(String.class);
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(urldownload);
+//                        Pattern p =Pattern.compile("%2..*%2F(.*?)\\?alt");
+//                        String link = String.valueOf(storageReference.getMetadata());
+                        String fname = storageReference.getName();
+                        Toast.makeText(MainActivity.this, fname, Toast.LENGTH_SHORT).show();
+
                         manager = (DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
                         Uri uri = Uri.parse(urldownload);
                         DownloadManager.Request request = new DownloadManager.Request(uri);
                         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
                         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,fname);
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fname);
 
 
                         manager.enqueue(request);
                     }
+
+
+
+//                        String ff[]=urldownload.split(Pattern.quote("?"));
+//                        String filenpm=("https://firebasestorage.googleapis.com/v0/b/image-share-4446c.appspot.com/o/images");
+//                        String ex =filenpm[0];
+//                        Toast.makeText(MainActivity.this, ff[0], Toast.LENGTH_SHORT).show();
+
+                    }
                 }
-            }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -127,13 +146,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     private void uploadImage() {
         if (filePath != null) {
             StorageReference ref
                     = storageReference
                     .child(
                             "images/"
-                                    + UUID.randomUUID().toString());
+                                    + filename);
             ref.putFile(filePath)
                     .addOnSuccessListener(
                             new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -257,7 +278,17 @@ public class MainActivity extends AppCompatActivity {
                 && data.getData() != null) {
 
             // Get the Uri of data
+
             filePath = data.getData();
+
+            Cursor mCursor =
+                    getApplicationContext().getContentResolver().query(filePath, null, null, null, null);
+            int indexedname = mCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            mCursor.moveToFirst();
+             filename = mCursor.getString(indexedname);
+            mCursor.close();
+
+            Toast.makeText(this, filename, Toast.LENGTH_SHORT).show();
             try {
 
                 // Setting image on image view using Bitmap
