@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,6 +15,7 @@
         android:layout_height="wrap_content"
         android:text="Send File"
         android:textSize="40dp"
+        android:layout_marginTop="100dp"
         android:layout_marginBottom="30dp"
         android:textAlignment="center"></TextView>
     <Button
@@ -43,19 +45,15 @@
         app:layout_constraintTop_toBottomOf="@+id/file"
         app:layout_constraintVertical_bias="0.212" />
 
-    <TextView
-        android:id="@+id/showunique"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Unique Id"
-        android:layout_marginTop="-30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/file"
-        app:layout_constraintVertical_bias="0.212"
-        android:visibility="invisible"></TextView>
 
+    <LinearLayout
+        android:id="@+id/recieve"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:flow_verticalAlign="center"
+        android:layout_marginTop="-140dp"
+        android:gravity="center">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -65,22 +63,22 @@
         android:layout_marginBottom="30dp"
         android:textAlignment="center"></TextView>
 
-    <EditText
-        android:id="@+id/uniqid"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:hint="Enter the unique code"
+        <EditText
+            android:id="@+id/uniqid"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/shape_border"
 
-        android:background="@drawable/shape_border"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        android:gravity="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/upload"
-        app:layout_constraintVertical_bias="0.203" />
+            android:gravity="center"
+            android:hint="Enter the unique code"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/upload"
+            app:layout_constraintVertical_bias="0.203" />
 
-    <Button
+        <Button
         android:id="@+id/getfile"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
@@ -94,5 +92,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/uniqid" />
 
+    </LinearLayout>
+    <TextView
+        android:id="@+id/showunique"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Unique Id"
+        android:layout_marginStart="-30dp"
+        android:textSize="60dp"
+        android:layout_marginTop="-300dp"></TextView>
+    <ImageView
+        android:id="@+id/copy"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="-60dp"
+        android:layout_marginStart="140dp"
+        android:src="@drawable/ic_baseline_content_copy_24"></ImageView>
+    <Button
+        android:id="@+id/sendorrecieve"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:text="Send or Recieve more files"
+        android:layout_marginTop="20dp"
+        android:textSize="20dp"
+        android:fontFamily="@font/lato_regular"
+        android:background="@drawable/signupbtn"></Button>
 
 </LinearLayout>

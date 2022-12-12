@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -18,6 +20,8 @@ import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
     FirebaseStorage storage;
     TextView showuniquetext;
     StorageReference storageReference;
-    Button filechoose,upload,getfile;
+    Button filechoose,upload,getfile,sendorrec;
+    ImageView copybtn;
     FirebaseDatabase database;
     DatabaseReference ref;
     int RandomNumber;
@@ -64,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
      String type;
      String[] et;
      String filename;
+     LinearLayout rev;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +78,13 @@ public class MainActivity extends AppCompatActivity {
         upload=(Button) findViewById(R.id.upload);
         uni=(EditText) findViewById(R.id.uniqid);
         getfile=(Button) findViewById(R.id.getfile);
-        showuniquetext=(TextView) findViewById(R.id.showunique) ;
+        showuniquetext=(TextView) findViewById(R.id.showunique);
+        rev=(LinearLayout) findViewById(R.id.recieve);
+        copybtn=(ImageView) findViewById(R.id.copy);
+        sendorrec=(Button) findViewById(R.id.sendorrecieve);
+        sendorrec.setVisibility(View.INVISIBLE);
+        copybtn.setVisibility(View.INVISIBLE);
+        showuniquetext.setVisibility(View.INVISIBLE);
         progressDialog=new ProgressDialog(this);
         database=FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -93,7 +105,31 @@ public class MainActivity extends AppCompatActivity {
         getfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DownloadFile();
+
+                if(!uni.getText().toString().equals("")) {
+                    DownloadFile();
+                }
+            }
+        });
+        copybtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Copied Uniue Id",showuniquetext.getText().toString());
+                Toast.makeText(MainActivity.this, "Copied Uniue Id", Toast.LENGTH_SHORT).show();
+                clipboard.setPrimaryClip(clip);
+            }
+        });
+        sendorrec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                upload.setVisibility(View.VISIBLE);
+                showuniquetext.setVisibility(View.INVISIBLE);
+                copybtn.setVisibility(View.INVISIBLE);
+                sendorrec.setVisibility(View.INVISIBLE);
+
+                rev.setVisibility(View.VISIBLE);
+                filechoose.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -227,8 +263,11 @@ public class MainActivity extends AppCompatActivity {
 //        Toast.makeText(this,String.valueOf(RandomNumber), Toast.LENGTH_SHORT).show();
         upload.setVisibility(View.INVISIBLE);
         showuniquetext.setVisibility(View.VISIBLE);
+        copybtn.setVisibility(View.VISIBLE);
+        sendorrec.setVisibility(View.VISIBLE);
         showuniquetext.setText(String.valueOf(RandomNumber));
-
+        rev.setVisibility(View.INVISIBLE);
+        filechoose.setVisibility(View.INVISIBLE);
 
 
     }
@@ -289,6 +328,7 @@ public class MainActivity extends AppCompatActivity {
             mCursor.close();
 
             Toast.makeText(this, filename, Toast.LENGTH_SHORT).show();
+            filechoose.setText(filename);
             try {
 
                 // Setting image on image view using Bitmap
@@ -307,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    private void SelectImage() {
+    private void SelectImage(){
         Intent intent = new Intent();
         intent.setType("*/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
